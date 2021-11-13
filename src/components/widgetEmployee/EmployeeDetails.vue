@@ -71,10 +71,6 @@ export default defineComponent({
       if(newVal!=oldval){
           console.log(newVal)
           if(this.employee){
-            /*const val = this.expandedElements[this.employee.uniqueId].expand;
-            this.expandedElements[this.employee.uniqueId].expand = val
-            this.updateToggleTree(this.employee.subordinates,val)
-            this.updateList()*/
             const val = this.expandedElements[newVal[1].uniqueId].expand
             this.updateToggleTree(newVal[1].subordinates,val)
             const val1 = this.expandedElements[newVal[2].uniqueId].expand
@@ -131,9 +127,6 @@ export default defineComponent({
         if(subEmp.subordinates && this.expandedElements[subEmp.uniqueId].expand){
           this.updateToggleTree(subEmp.subordinates,value)
         }
-        /*else{
-          this.collapseAll(subEmp)
-        }*/
       }
     },
     expand(employee:Employee){
