@@ -12,6 +12,7 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
         this.stack_redo = []
     }
     move(employeeID: number, supervisorID: number) {
+        
         // execute move action when employee ID is different from new supervisor ID
         if (employeeID !== supervisorID) {
             const [employee, empParent] = this.getEpmloyee(employeeID, this.ceo) ?? [null, null]
@@ -20,9 +21,10 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
             if ((employee && supervisor && empParent) && (supervisor.uniqueId !== empParent.uniqueId)) { // we add empParent because the ceo cann't be subordinate
                 //conserve prevoious state
                 const prevState: StackState = {
-                    employeeId: employeeID,
-                    oldSupervisor: empParent.uniqueId,
-                    oldSubordinates: employee.subordinates.map((emp: Employee) => emp.uniqueId)
+                    oldEmployee: employee,
+                    newSupervisor : supervisor,
+                    oldSupervisor: empParent,
+                    oldSubordinates: employee.subordinates
                 }
                 //add the previous state to the stacke
                 this.stack_undo.push(prevState)
@@ -41,23 +43,27 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
     undo() {
         const oldState: StackState = this.stack_undo.pop()!
         if (oldState) {
-            this.changeState(oldState, 'undo')
+            return this.changeState(oldState, 'undo')
         }
+        return []
     }
     redo() {
         const oldState: StackState = this.stack_redo.pop()!
         if (oldState) {
-            this.changeState(oldState, 'redo')
+            return this.changeState(oldState, 'redo')
         }
+        return []
     }
     private changeState(oldState: StackState, actionType: string) {
-        const [employee, empParent] = this.getEpmloyee(oldState.employeeId, this.ceo)
-        const [oldSupervisor] = this.getEpmloyee(oldState.oldSupervisor, this.ceo)
+        const employee= oldState.oldEmployee
+        const empParent=oldState.newSupervisor
+        const oldSupervisor = oldState.oldSupervisor
         if (employee && empParent && oldSupervisor) {
             const currentState: StackState = {
-                employeeId: employee.uniqueId,
-                oldSupervisor: empParent.uniqueId,
-                oldSubordinates: employee.subordinates.map((emp: Employee) => emp.uniqueId)
+                oldEmployee: employee,
+                newSupervisor: oldSupervisor, 
+                oldSupervisor: empParent,
+                oldSubordinates: employee.subordinates
             }
             if (actionType === 'undo') {
                 // push the actual state into redo stack (we need it to perform redo action later)
@@ -72,7 +78,7 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
             let employeeSubordinates: Employee[] = []
             let supervisorSubordinates: Employee[] = []
             oldSupervisor.subordinates.forEach((emp: Employee) => {
-                if (this.employeeExists(emp.uniqueId, oldState.oldSubordinates))
+                if (this.employeeExists(emp, oldState.oldSubordinates))
                     employeeSubordinates.push(emp)
                 else
                     supervisorSubordinates.push(emp)
@@ -82,6 +88,7 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
             oldSupervisor.subordinates = supervisorSubordinates
             // restore old supervisor
             oldSupervisor.subordinates.push(employee)
+            return [employee,empParent,oldSupervisor]
         }
     }
 
@@ -98,7 +105,6 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
         }
         return [null, null]
     }
-
     // Change the supervisor of the subordinates of employee
     private changeSupervisor(employee: Employee, newSupervisor: Employee) {
         // remove employee from the supervisor subordinates
@@ -110,7 +116,7 @@ export class EmployeeOrgApp implements IEmployeeOrgApp {
         })
     }
     // Check if employee exists in a list of employees
-    private employeeExists(employeeID: number, listEmployee: number[]) {
-        return listEmployee.find(elemID => { return elemID === employeeID })
+    private employeeExists(employee: Employee, listEmployee: Employee[]) {
+        return listEmployee.find(elemID => { return elemID === employee })
     }
 }

@@ -9,9 +9,14 @@
       hover:bg-gray-900 hover:bg-opacity-10
       transition
     "
-    @click="this.handleTree"
+    @click="this.handleTree(employee)"
+    draggable="true"
+    @dragstart="startDrag($event,employee,parent)"
+    @drop="onDrop($event, employee)" 
+    @dragover.prevent 
+    @dragenter.prevent
   >
-    <div :style="{ width: offsetItem ? offsetItem * 32 + 'px' : '10px' }"></div>
+    <div :style="{ width: offsetItem ? offsetItem * 28 + 'px' : '10px' }"></div>
     <span
       class="material-icons select-none"
       v-if="employee.subordinates && employee.subordinates.length"
@@ -31,6 +36,9 @@ export default defineComponent({
     handleTree: Function,
     toggled: Boolean,
     employee: Object,
+    startDrag: Function,
+    onDrop: Function,
+    parent:Object
   },
 });
 </script>

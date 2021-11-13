@@ -1,5 +1,7 @@
+import { Employee } from "./employeeOrgApp.interface";
 export interface StackState {
-    employeeId: number,
-    oldSupervisor: number,
-    oldSubordinates: number[]
+    oldEmployee: Employee,
+    newSupervisor : Employee,
+    oldSupervisor: Employee,
+    oldSubordinates: Employee[]
 }

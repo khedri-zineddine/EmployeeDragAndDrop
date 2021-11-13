@@ -7,7 +7,7 @@
     @mouseleave="dragEnd"
   >
     <div
-      class="h-full transition-panels overflow-y-auto"
+      class="h-full transition-panels "
       :style="{ width: splitLeft }"
     >
       <slot name="widget"></slot>
