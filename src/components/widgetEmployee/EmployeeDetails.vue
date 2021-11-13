@@ -71,11 +71,17 @@ export default defineComponent({
       if(newVal!=oldval){
           console.log(newVal)
           if(this.employee){
-            const val = this.expandedElements[newVal[2].uniqueId].expand
-            this.updateToggleTree(newVal[2].subordinates,val)
-            const val1 = this.expandedElements[newVal[1].uniqueId].expand
-            this.updateToggleTree(newVal[0].subordinates,val1)
+            /*const val = this.expandedElements[this.employee.uniqueId].expand;
+            this.expandedElements[this.employee.uniqueId].expand = val
+            this.updateToggleTree(this.employee.subordinates,val)
+            this.updateList()*/
+            const val = this.expandedElements[newVal[1].uniqueId].expand
+            this.updateToggleTree(newVal[1].subordinates,val)
+            const val1 = this.expandedElements[newVal[2].uniqueId].expand
+            this.updateToggleTree(newVal[2].subordinates,val1)
+            this.expand(newVal[0])
             this.updateList()
+            
         }
       }
     }
@@ -106,7 +112,7 @@ export default defineComponent({
     // define the element that will be rendred. based on scroll, itemHeight, heigth
     updateList(){
         const visibleData = this.flattenTree(this.employee,0).filter(elem=>this.expandedElements[elem.emp.uniqueId].visible)
-        this.baseHeight = visibleData.length*this.itemHeight
+        this.baseHeight = visibleData.length*this.itemHeight + this.itemHeight 
         let start = this.getStartIndex
         const end = start + this.countVisibleItem
         this.listData = visibleData.slice(start,end)
@@ -125,6 +131,14 @@ export default defineComponent({
         if(subEmp.subordinates && this.expandedElements[subEmp.uniqueId].expand){
           this.updateToggleTree(subEmp.subordinates,value)
         }
+        /*else{
+          this.collapseAll(subEmp)
+        }*/
+      }
+    },
+    expand(employee:Employee){
+      if(!this.expandedElements[employee.uniqueId].expand){
+        this.expandedElements[employee.uniqueId].expand = true
       }
     },
     // event to drag element
