@@ -67,23 +67,21 @@ export default defineComponent({
         this.updateList()
       }
     },
-    listData : function(newVal,oldval){
-      //console.log("new val",newVal)
-      //console.log("old val",oldval)
-    },
     undoRedoData: function(newVal,oldval){
       if(newVal!=oldval){
-          console.log("sdflsdjflksjdf")
+          console.log(newVal)
           if(this.employee){
-          const val = this.expandedElements[this.employee.uniqueId].expand;
-          this.expandedElements[this.employee.uniqueId].expand = val
-          this.updateToggleTree(this.employee.subordinates,val)
-          this.updateList()
+            const val = this.expandedElements[newVal[2].uniqueId].expand
+            this.updateToggleTree(newVal[2].subordinates,val)
+            const val1 = this.expandedElements[newVal[1].uniqueId].expand
+            this.updateToggleTree(newVal[0].subordinates,val1)
+            this.updateList()
         }
       }
     }
   },
   methods: {
+    //convert the tree into array of objects
     flattenTree(employee:any,level:number=0,parent:any=null):{emp:Employee,level:number,parent:Employee}[]{
       if(employee && employee.subordinates.length==0){
         return [{emp:employee,level:level,parent:parent}]
@@ -96,6 +94,7 @@ export default defineComponent({
       }
       return arr
     },
+    // create array of objects. this array store the state of each node in the tree : Expanded, Visible
     initExpandedElements(employee:any){
       const val = {expand:false,visible:false}
       this.expandedElements[employee.uniqueId] = val
@@ -104,6 +103,7 @@ export default defineComponent({
         this.expandedElements[employee.uniqueId] = val
       }
     },
+    // define the element that will be rendred. based on scroll, itemHeight, heigth
     updateList(){
         const visibleData = this.flattenTree(this.employee,0).filter(elem=>this.expandedElements[elem.emp.uniqueId].visible)
         this.baseHeight = visibleData.length*this.itemHeight
@@ -111,6 +111,7 @@ export default defineComponent({
         const end = start + this.countVisibleItem
         this.listData = visibleData.slice(start,end)
     },
+    // expand and collapse tree elements
     toggleTree(employee:Employee) {
       const val = !this.expandedElements[employee.uniqueId].expand;
       this.expandedElements[employee.uniqueId].expand = val
@@ -126,6 +127,7 @@ export default defineComponent({
         }
       }
     },
+    // event to drag element
     startDrag(event:any, emp:Employee,parent:Employee) {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
@@ -134,6 +136,7 @@ export default defineComponent({
       event.dataTransfer.setData('emp', data)
       event.dataTransfer.setData('par', par)
     },
+    // event to drop element
     onDrop(event:any, supervisor:Employee) {
       const emp = JSON.parse(event.dataTransfer.getData('emp'))
       const parent = JSON.parse(event.dataTransfer.getData('par'))
@@ -141,6 +144,7 @@ export default defineComponent({
         this.emitSignal(emp,parent,supervisor)
       }
     },
+    // notify parent when element is droped
     emitSignal(emp:Employee,parent:Employee,supervisor:Employee){
       if(this.moveEmployee){
         this.moveEmployee({empID:emp.uniqueId,supervisorID:supervisor.uniqueId})
@@ -150,20 +154,7 @@ export default defineComponent({
         this.updateToggleTree(emp.subordinates,val1)
         this.updateList()
       }
-    },
-    /*undoAction(){
-      if(this.undo&&this.employee){
-        this.undo()
-        //const val = this.expandedElements[this.employee.uniqueId].expand
-        //this.updateToggleTree(this.employee.subordinates,val)
-      }
-    },
-    redoAction(){
-      if(this.redo){
-        this.redo()
-        this.updateList()
-      }
-    }*/
+    }
   },
   mounted(){
     if(this.employee){

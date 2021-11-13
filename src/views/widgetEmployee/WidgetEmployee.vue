@@ -1,6 +1,6 @@
 <template>
   <div class='m-3  flex items-center'>
-    <button class='flex items-center bg-white text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow cursor-pointer' @click="undoAction()" :disable="true" :class="this.employeeOrg.stack_undo.length===0?'cursor-not-allowed opacity-50':'hover:bg-gray-100'" >
+    <button class='flex items-center bg-white text-gray-800 font-semibold py-1 px-3 border border-gray-400 rounded shadow cursor-pointer' @click="undoAction()" :class="this.employeeOrg.stack_undo.length===0?'cursor-not-allowed opacity-50':'hover:bg-gray-100'" >
         <span class="material-icons">
             undo
         </span>
@@ -40,7 +40,6 @@ export default class WidgetEmployee extends Vue {
    this.employeeOrg.move(parseInt(event.empID),event.supervisorID)
  }
  public undoAction(){
-   this.employeeOrg.stack_undo
    const data = this.employeeOrg.undo()??null
    if(data){
     this.undoRedoData = data
@@ -49,7 +48,6 @@ export default class WidgetEmployee extends Vue {
  public redoAction(){
    const data = this.employeeOrg.redo()??null
    if(data){
-     console.log(data)
       this.undoRedoData = data
   }
  }

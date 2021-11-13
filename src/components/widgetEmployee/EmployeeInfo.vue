@@ -23,7 +23,11 @@
     >
       {{ toggled ? "remove_circle" : "add_circle" }}
     </span>
-    <div v-else :style="{ width: '23px' }"></div>
+    <div v-else :style="{ width: '23px' }">
+      <span class="material-icons select-none">
+          horizontal_rule
+      </span>
+    </div>
     <span class="block ml-2 select-none">{{ employee.name }}</span>
   </div>
 </template>
