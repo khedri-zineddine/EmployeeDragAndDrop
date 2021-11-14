@@ -69,13 +69,8 @@ export default defineComponent({
     },
     undoRedoData: function(newVal,oldval){
       if(newVal!=oldval){
-          console.log(newVal)
           if(this.employee){
-            const val = this.expandedElements[newVal[1].uniqueId].expand
-            this.updateToggleTree(newVal[1].subordinates,val)
-            const val1 = this.expandedElements[newVal[2].uniqueId].expand
-            this.updateToggleTree(newVal[2].subordinates,val1)
-            this.expand(newVal[0])
+            this.checkExpands(this.employee)
             this.updateList()
             
         }
@@ -129,10 +124,19 @@ export default defineComponent({
         }
       }
     },
-    expand(employee:Employee){
-      if(!this.expandedElements[employee.uniqueId].expand){
-        this.expandedElements[employee.uniqueId].expand = true
+    // update tree visibility when undo/redo is triggered
+    checkExpands(employee:any){
+      const recursiveExpand=(employees:Employee[],expanded:boolean,visible:boolean)=>{
+        for(const index in employees){
+          const subEmp = employees[index]
+          this.expandedElements[subEmp.uniqueId].visible = expanded && visible
+          const tmp = this.expandedElements[subEmp.uniqueId].expand
+          recursiveExpand(subEmp.subordinates,tmp,expanded && visible)
+        }
       }
+      const valExp = this.expandedElements[employee.uniqueId].expand
+      const valVisib = this.expandedElements[employee.uniqueId].visible
+      recursiveExpand(employee.subordinates,valExp,valVisib)
     },
     // event to drag element
     startDrag(event:any, emp:Employee,parent:Employee) {
