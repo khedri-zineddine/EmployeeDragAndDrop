@@ -14,7 +14,7 @@
   </div>
   <div></div>
   <div class="w-full h-full box-border py-3 overflow-y-auto" :style="{height: height + 'px'}" @scroll="onScroll">
-    <EmployeeDetails :employee="employeeOrg.ceo" :moveEmployee="moveEmp" :undo="undoAction" :redo="redoAction"  :itemHeight="itemHeight" :height="height" :scrollTop="scrollTop" :undoRedoData="undoRedoData" />
+    <EmployeeDetails ref="employeeDetails" :employee="employeeOrg.ceo" :moveEmployee="moveEmp" :undo="undoAction" :redo="redoAction"  :itemHeight="itemHeight" :height="height" :scrollTop="scrollTop"  />
   </div>
 </template>
 
@@ -35,21 +35,20 @@ export default class WidgetEmployee extends Vue {
   itemHeight = 50
   scrollTop = 0
   height = 500
-  undoRedoData : Employee[] =[]
  public moveEmp(event:any) {
    this.employeeOrg.move(parseInt(event.empID),event.supervisorID)
  }
  public undoAction(){
-   const data = this.employeeOrg.undo()??null
-   if(data){
-    this.undoRedoData = data
-  }
+   this.employeeOrg.undo()??null
+   if(this.$refs.employeeDetails){
+    (this.$refs.employeeDetails as any).checkExpands(this.employeeOrg.ceo)
+   }
  }
  public redoAction(){
-   const data = this.employeeOrg.redo()??null
-   if(data){
-      this.undoRedoData = data
-  }
+   this.employeeOrg.redo()??null
+   if(this.$refs.employeeDetails){
+    (this.$refs.employeeDetails as any).checkExpands(this.employeeOrg.ceo)
+   }
  }
  public onScroll(event:any){
    this.scrollTop = event.target.scrollTop

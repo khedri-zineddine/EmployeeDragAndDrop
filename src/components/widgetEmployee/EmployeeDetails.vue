@@ -28,7 +28,6 @@ export default defineComponent({
     undo: Function,
     redo : Function,
     moveEmployee: Function,
-    undoRedoData : Object,
     employee: Object,
     height:{
       type:Number,
@@ -67,15 +66,6 @@ export default defineComponent({
         this.updateList()
       }
     },
-    undoRedoData: function(newVal,oldval){
-      if(newVal!=oldval){
-          if(this.employee){
-            this.checkExpands(this.employee)
-            this.updateList()
-            
-        }
-      }
-    }
   },
   methods: {
     //convert the tree into array of objects
@@ -137,6 +127,7 @@ export default defineComponent({
       const valExp = this.expandedElements[employee.uniqueId].expand
       const valVisib = this.expandedElements[employee.uniqueId].visible
       recursiveExpand(employee.subordinates,valExp,valVisib)
+      this.updateList()
     },
     // event to drag element
     startDrag(event:any, emp:Employee,parent:Employee) {

@@ -9,12 +9,14 @@
       hover:bg-gray-900 hover:bg-opacity-10
       transition
     "
+    :class="dragHover?' bg-gray-900 bg-opacity-10 ':''"
     @click="this.handleTree(employee)"
     draggable="true"
     @dragstart="startDrag($event,employee,parent)"
     @drop="onDrop($event, employee)" 
-    @dragover.prevent 
+    @dragover="onDragEnter"
     @dragenter.prevent
+    @dragleave="onDragLeave"
   >
     <div :style="{ width: offsetItem ? offsetItem * 28 + 'px' : '10px' }"></div>
     <span
@@ -42,7 +44,24 @@ export default defineComponent({
     employee: Object,
     startDrag: Function,
     onDrop: Function,
-    parent:Object
+    parent:Object,
   },
+  data(){
+    return{
+      dragHover:false
+    }
+  },
+  methods:{
+    onDragEnter(event:any){
+      event.preventDefault()
+      console.log("entre")
+      this.dragHover = true
+    },
+    onDragLeave(event:any){
+      console.log("leave")
+      event.preventDefault()
+      this.dragHover = false
+    }
+  }
 });
 </script>
