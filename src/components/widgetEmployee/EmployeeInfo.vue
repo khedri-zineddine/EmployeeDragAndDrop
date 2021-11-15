@@ -13,7 +13,7 @@
     @click="this.handleTree(employee)"
     draggable="true"
     @dragstart="startDrag($event,employee,parent)"
-    @drop="onDrop($event, employee)" 
+    @drop="onDropElem" 
     @dragover="onDragEnter"
     @dragenter.prevent
     @dragleave="onDragLeave"
@@ -54,12 +54,15 @@ export default defineComponent({
   methods:{
     onDragEnter(event:any){
       event.preventDefault()
-      console.log("entre")
       this.dragHover = true
     },
     onDragLeave(event:any){
-      console.log("leave")
       event.preventDefault()
+      this.dragHover = false
+    },
+    onDropElem(event:any){
+      if(this.onDrop)
+        this.onDrop(event, this.employee)
       this.dragHover = false
     }
   }
